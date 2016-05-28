@@ -55,7 +55,7 @@
 	<string name="title_about">About Resurrection</string>
 	<string name="dev_categorie_title">Developer &amp; Maintainer</string>
 	
-	<string name="rr_mod_version">Resurrection version</string>
+	<string name="rr_mod_version">cyanogenmod version</string>
 	
 	<!-- Nfc settings -->
 	<string name="nfc_polling_mode_title">NFC polling mode</string>
@@ -705,11 +705,6 @@
 	<string name="advanced_sound_title">Advanced options</string>
 	<string name="sound_title">Sound</string>
 	
-	<!-- Camera sound switch -->
-	<string name="camera_sounds_title">Camera shutter sound</string>
-	<string name="camera_sounds_summary">Enable system camera shutter sound</string>
-	<string name="camera_sound_warning_dialog_text">Disabling the camera shutter sound is illegal in some areas! Please check the applicable law in your country</string>
-	
 	<!-- Lock clock -->
 	<string name="lock_clock_title">Clock widget</string>
 	<string name="lock_clock_summary">View or change how the \'cLock\' Home  widget will display</string>
@@ -1053,7 +1048,7 @@
 	<string name="show_carrier_enabled">Enabled</string>
 	
 	<!-- Statusbar RR logo -->
-	<string name="status_bar_logo">Resurrection logo</string>
+	<string name="status_bar_logo">status logo</string>
 	<string name="status_bar_rr_logo_title">Enable logo</string>
 	<string name="status_bar_rr_logo_summary">Enable to show logo in statusbar</string>
 	<string name="status_bar_rr_logo_color">Logo color</string>

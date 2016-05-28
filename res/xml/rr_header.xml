@@ -53,13 +53,6 @@
 	android:defaultValue="true"/>
 	
 	<com.android.settings.cyanogenmod.SystemSettingSwitchPreference
-	android:key="hide_panel_battery"
-	android:title="@string/hide_panel_battery" 
-	android:summaryOn="@string/hide_battery_summary_on"
-	android:summaryOff="@string/hide_battery_summary_off"
-	android:defaultValue="true"/>
-	
-	<com.android.settings.cyanogenmod.SystemSettingSwitchPreference
 	android:key="hide_panel_icons"
 	android:title="@string/hide_panel_icons" 
 	android:summaryOn="@string/hide_icons_summary_on"

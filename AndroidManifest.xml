@@ -5,9 +5,7 @@
         android:sharedUserId="android.uid.system">
 
     <uses-sdk
-        android:minSdkVersion="21" />
-    <uses-library android:name="org.apache.http.legacy" android:required="false" />
-    
+        android:minSdkVersion="21" />    
     <original-package android:name="com.android.settings" />
 
     <uses-permission android:name="android.permission.SET_ANIMATION_SCALE" />
@@ -198,8 +196,6 @@
             <meta-data android:name="com.android.settings.PRIMARY_PROFILE_CONTROLLED"
                 android:value="true" />
         </activity>
-
-        <activity android:name=".rr.About" />
 
         <activity android:name="AirplaneModeVoiceActivity"
                 android:label="@string/wireless_networks_settings_title"

@@ -20,7 +20,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.pm.ResolveInfo;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,7 +50,6 @@ import com.android.settings.search.Indexable;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,8 +66,6 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
     private static final String LOG_TAG = "DeviceInfoSettings";
     private static final String FILENAME_PROC_VERSION = "/proc/version";
     private static final String FILENAME_MSV = "/sys/board_properties/soc/msv";
-    private static final String FILENAME_PROC_MEMINFO = "/proc/meminfo";
-    private static final String FILENAME_PROC_CPUINFO = "/proc/cpuinfo";
 
     private static final String KEY_MANUAL = "manual";
     private static final String KEY_REGULATORY_INFO = "regulatory_info";
@@ -89,8 +88,7 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
     private static final String KEY_MOD_VERSION = "mod_version";
     private static final String KEY_MOD_BUILD_DATE = "build_date";
     private static final String KEY_MOD_API_LEVEL = "mod_api_level";
-    private static final String KEY_DEVICE_CPU = "device_cpu";
-    private static final String KEY_DEVICE_MEMORY = "device_memory";
+    private static final String KEY_CM_UPDATES = "cm_updates";
 
     static final int TAPS_TO_BE_A_DEVELOPER = 7;
 
@@ -134,15 +132,17 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
         setValueSummary(KEY_BASEBAND_VERSION, "gsm.version.baseband");
         setValueSummary(KEY_EQUIPMENT_ID, PROPERTY_EQUIPMENT_ID);
         setStringSummary(KEY_DEVICE_MODEL, Build.MODEL);
-        setStringSummary(KEY_BUILD_NUMBER, "Resurrection Remix Marshmallow 6.0.1_r43 - MOB30J");
+        setStringSummary(KEY_BUILD_NUMBER, Build.DISPLAY);
         findPreference(KEY_BUILD_NUMBER).setEnabled(true);
         findPreference(KEY_KERNEL_VERSION).setSummary(getFormattedKernelVersion());
-        setValueSummary(KEY_MOD_VERSION, "ro.modversion");
+        findPreference(KEY_MOD_VERSION).setSummary(
+                cyanogenmod.os.Build.CYANOGENMOD_DISPLAY_VERSION);
         findPreference(KEY_MOD_VERSION).setEnabled(true);
         setValueSummary(KEY_MOD_BUILD_DATE, "ro.build.date");
         setExplicitValueSummary(KEY_MOD_API_LEVEL, constructApiLevelString());
-        findPreference(KEY_MOD_API_LEVEL).setEnabled(false);
-	getPreferenceScreen().removePreference(findPreference(KEY_MOD_API_LEVEL));
+        findPreference(KEY_MOD_API_LEVEL).setEnabled(true);
+        findPreference(KEY_MOD_BUILD_DATE).setEnabled(true);
+
         if (!SELinux.isSELinuxEnabled()) {
             String status = getResources().getString(R.string.selinux_status_disabled);
             setStringSummary(KEY_SELINUX_STATUS, status);
@@ -158,19 +158,11 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
         removePreferenceIfPropertyMissing(getPreferenceScreen(), KEY_SELINUX_STATUS,
                 PROPERTY_SELINUX_STATUS);
 
-        String cpuInfo = getCPUInfo();
-        String memInfo = getMemInfo();
-
-        if (cpuInfo != null) {
-            setStringSummary(KEY_DEVICE_CPU, cpuInfo);
+        // Only the owner should see the Updater settings, if it exists
+        if (UserHandle.myUserId() == UserHandle.USER_OWNER) {
+            removePreferenceIfPackageNotInstalled(findPreference(KEY_CM_UPDATES));
         } else {
-            getPreferenceScreen().removePreference(findPreference(KEY_DEVICE_CPU));
-        }
-
-        if (memInfo != null) {
-            setStringSummary(KEY_DEVICE_MEMORY, memInfo);
-        } else {
-            getPreferenceScreen().removePreference(findPreference(KEY_DEVICE_MEMORY));
+            getPreferenceScreen().removePreference(findPreference(KEY_CM_UPDATES));
         }
 
         // Remove Safety information preference if PROPERTY_URL_SAFETYLEGAL is not set
@@ -203,6 +195,9 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
             Utils.updatePreferenceToSpecificActivityOrRemove(act, parentPreference,
                     KEY_SYSTEM_UPDATE_SETTINGS,
                     Utils.UPDATE_PREFERENCE_FLAG_SET_TITLE_TO_MATCHING_ACTIVITY);
+            /* Make sure the activity is provided by who we want... */
+            if (findPreference(KEY_SYSTEM_UPDATE_SETTINGS) != null)
+                removePreferenceIfPackageNotInstalled(findPreference(KEY_SYSTEM_UPDATE_SETTINGS));
         } else {
             // Remove for secondary users
             removePreference(KEY_SYSTEM_UPDATE_SETTINGS);
@@ -249,6 +244,19 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
                 Intent intent = new Intent(Intent.ACTION_MAIN);
                 intent.setClassName("android",
                         com.android.internal.app.PlatLogoActivity.class.getName());
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
+                }
+            }
+        } else if (preference.getKey().equals(KEY_MOD_BUILD_DATE)) {
+            System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
+            mHits[mHits.length-1] = SystemClock.uptimeMillis();
+            if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
+                Intent intent = new Intent();
+                intent.setClassName("com.android.systemui",
+                        "com.android.systemui.tuner.TunerActivity$DemoModeActivity");
                 try {
                     startActivity(intent);
                 } catch (Exception e) {
@@ -311,6 +319,20 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
             PersistableBundle b = configManager.getConfig();
             if (b.getBoolean(CarrierConfigManager.KEY_CI_ACTION_ON_SYS_UPDATE_BOOL)) {
                 ciActionOnSysUpdate(b);
+            }
+        } else if (preference.getKey().equals(KEY_MOD_VERSION)) {
+            System.arraycopy(mHits, 1, mHits, 0, mHits.length-1);
+            mHits[mHits.length-1] = SystemClock.uptimeMillis();
+            if (mHits[0] >= (SystemClock.uptimeMillis()-500)) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.putExtra("is_cm", true);
+                intent.setClassName("android",
+                        com.android.internal.app.PlatLogoActivity.class.getName());
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Unable to start activity " + intent.toString());
+                }
             }
         }
         return super.onPreferenceTreeClick(preferenceScreen, preference);
@@ -566,44 +588,28 @@ public class DeviceInfoSettings extends SettingsPreferenceFragment implements In
             }
         };
 
-    private String getMemInfo() {
-        String result = null;
-        BufferedReader reader = null;
+    private boolean removePreferenceIfPackageNotInstalled(Preference preference) {
+        String intentUri=((PreferenceScreen) preference).getIntent().toUri(1);
+        Pattern pattern = Pattern.compile("component=([^/]+)/");
+        Matcher matcher = pattern.matcher(intentUri);
 
-        try {
-            /* /proc/meminfo entries follow this format:
-             * MemTotal:         362096 kB
-             * MemFree:           29144 kB
-             * Buffers:            5236 kB
-             * Cached:            81652 kB
-             */
-            String firstLine = readLine(FILENAME_PROC_MEMINFO);
-            if (firstLine != null) {
-                String parts[] = firstLine.split("\\s+");
-                if (parts.length == 3) {
-                    result = Long.parseLong(parts[1])/1024 + " MB";
+        String packageName=matcher.find()?matcher.group(1):null;
+        if(packageName != null) {
+            try {
+                PackageInfo pi = getPackageManager().getPackageInfo(packageName,
+                        PackageManager.GET_ACTIVITIES);
+                if (!pi.applicationInfo.enabled) {
+                    Log.e(LOG_TAG,"package "+packageName+" is disabled, hiding preference.");
+                    getPreferenceScreen().removePreference(preference);
+                    return true;
                 }
+            } catch (NameNotFoundException e) {
+                Log.e(LOG_TAG,"package "+packageName+" not installed, hiding preference.");
+                getPreferenceScreen().removePreference(preference);
+                return true;
             }
-        } catch (IOException e) {}
-
-        return result;
+        }
+        return false;
     }
+}
 
-    private String getCPUInfo() {
-        String result = null;
-
-        try {
-            /* The expected /proc/cpuinfo output is as follows:
-             * Processor    : ARMv7 Processor rev 2 (v7l)
-             * BogoMIPS    : 272.62
-             */
-            String firstLine = readLine(FILENAME_PROC_CPUINFO);
-            if (firstLine != null) {
-                result = firstLine.split(":")[1].trim();
-            }
-        } catch (IOException e) {}
-
-        return result;
-
-     }
- }
