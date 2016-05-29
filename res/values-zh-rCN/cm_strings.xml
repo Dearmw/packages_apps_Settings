@@ -1037,7 +1037,4 @@
   <string name="restrict_cellular_access_dialog_summary">此功能在仅有移动数据网络时可能会导致依赖网络访问的应用停止工作。\n\n您可以在设置中找到对于该应用更加合适的数据使用情况控制。</string>
   <!-- Label for settings shortcut: carrier selection -->
   <string name="shortcut_carrier_title">网络运营商</string>
-  <string name="powermenu_screenshot_delay_title">设置截图延迟</string>
-  <string name="power_menu_screenrecord_title">屏幕记录</string>
-  <string name="power_menu_power_title">关闭电源</string>
 </resources>
