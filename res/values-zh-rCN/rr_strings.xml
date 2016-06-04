@@ -1904,4 +1904,6 @@
   <string name="powermenu_screenshot_delay_title">设置截图延迟</string>
   <string name="power_menu_screenrecord_title">屏幕记录</string>
   <string name="power_menu_power_title">关闭电源</string>
+  <string name="battery_fully_charged_notif_title">电池充电通知</string>
+  <string name="battery_fully_charged_notif_summary">显示电池充电时的通知</string>
 </resources>
