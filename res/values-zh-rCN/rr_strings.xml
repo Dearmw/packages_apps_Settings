@@ -173,8 +173,8 @@
   <string name="recents_style_3">Taskview Header</string>
   <string name="pin_button_color">Screen Pinning Button </string>
   <string name="mw_button_color">Multi-Window Button</string>
-  <string name="float_button_color">Floating Button</string>
-  <string name="kill_app_button_color">Close Button</string>
+  <string name="float_button_color">悬浮按钮</string>
+  <string name="kill_app_button_color">关闭按钮</string>
   <string name="tv_app_color">App Icon Fill (Fills Entire Icon)</string>
   <string name="tv_app_text_color">App Description Text</string>
   <string name="recent_styles">最近任务样式</string>
@@ -1362,12 +1362,6 @@
   <string name="battery_stats_reset">重置统计数据</string>
   <string name="battery_stats_message">电池历史统计记录将会被重置</string>
   <string name="ok_string">确定</string>
-  <!-- app notifications hide on lockscreen -->
-  <string name="app_notification_no_keyguard_title">锁定时隐藏</string>
-  <string name="app_notification_no_keyguard_summary">当设备锁定时隐藏这个应用的通知</string>
-  <string name="filter_notif_no_keyguard">锁定时隐藏</string>
-  <string name="notifications_no_keyguard">锁定时隐藏</string>
-  <string name="notifications_four_items"><xliff:g id="notif_state" example="Priority">%1$s</xliff:g> / <xliff:g id="notif_state" example="Priority">%2$s</xliff:g> / <xliff:g id="notif_state" example="Priority">%3$s</xliff:g> / <xliff:g id="notif_state" example="Priority">%4$s</xliff:g></string>
   <!-- UI debug setting: show CPU info? [CHAR LIMIT=25] -->
   <string name="show_cpu_info">Show CPU info</string>
   <!-- UI debug setting: show cpu usage summary [CHAR LIMIT=50] -->
@@ -1904,6 +1898,30 @@
   <string name="powermenu_screenshot_delay_title">设置截图延迟</string>
   <string name="power_menu_screenrecord_title">屏幕记录</string>
   <string name="power_menu_power_title">关闭电源</string>
+  <!-- Tiles animation style  -->
+  <string name="quicksettings_tiles_category">Tiles动画选项</string>
+  <string name="qs_tile_animation_style_title">Tiles动画风格</string>
+  <string name="qs_tile_animation_duration_title">瓷砖动画持续时间</string>
+  <string name="qs_tile_animation_interpolator_title">动画插位值</string>
+  <string name="qs_tile_animation_style_off">没有动画</string>
+  <string name="qs_tile_animation_style_flip">翻转</string>
+  <string name="qs_tile_animation_style_rotate">旋转</string>
+  <string name="qs_tile_animation_duration_low">低</string>
+  <string name="qs_tile_animation_duration_default">默认</string>
+  <string name="qs_tile_animation_duration_fast">快</string>
+  <string name="qs_tile_animation_interpolator_linearInterpolator">线性</string>
+  <string name="qs_tile_animation_interpolator_accelerateInterpolator">加快</string>
+  <string name="qs_tile_animation_interpolator_decelerateInterpolator">减速</string>
+  <string name="qs_tile_animation_interpolator_accelerateDecelerateInterpolator">加速减速</string>
+  <string name="qs_tile_animation_interpolator_bounceInterpolator">反弹</string>
+  <string name="qs_tile_animation_interpolator_overshootInterpolator">超调</string>
+  <string name="qs_tile_animation_interpolator_anticipateInterpolator">预期</string>
+  <string name="qs_tile_animation_interpolator_anticipateOvershootInterpolator">预期超调</string>
+  <string name="qs_tile_animation_duration_superfast">超快</string>
+  <string name="qs_set_animation_style">%1$s</string>
+  <string name="qs_set_animation_duration">%1$s</string>
+  <string name="qs_set_animation_interpolator">%1$s</string>
+  <!-- Battery fully charged notification -->
   <string name="battery_fully_charged_notif_title">电池充电通知</string>
   <string name="battery_fully_charged_notif_summary">显示电池充电时的通知</string>
 </resources>
